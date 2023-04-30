@@ -18,7 +18,7 @@ $letra="";
             text-align: center;
         }
         table{
-            width: 80%;
+            width: 100%;
             height: 100%;
         }
     </style>
@@ -69,12 +69,20 @@ $letra="";
                     <tbody>
                         <tr>
                             <?php
-                                if ($letra="A"){
+                            try {
+                                $con = getConexion();
+                                $sql = "SELECT l.nombre ,p.nombre, l.poblacion From localidades l
+                                        join provincias p on l.id_localidad = p.id_capital
+                                        where (l.nombre like 'A%') order by l.nombre;";
+                                $st = $con->prepare($sql);
+                                $st->bind_param("s", $letra);
+                                $st->execute();
+                                $st->close();
+                                $con->close();
+                            }
+                            catch (mysqli_sql_exception $e){
 
-                                }
-                                else{
-
-                                }
+                            }
                             ?>
                         </tr>
                     </tbody>

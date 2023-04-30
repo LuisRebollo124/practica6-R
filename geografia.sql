@@ -22827,6 +22827,8 @@ INSERT INTO localidades ( id_localidad, nombre, poblacion,n_provincia ) VALUES
 
 
 commit;
- 
+
+SELECT l.nombre, l.poblacion From localidades l
+    where (l.nombre like 'A%');
 
 set foreign_key_checks=1;
