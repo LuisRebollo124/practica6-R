@@ -1,6 +1,17 @@
 <?php
 include_once "conexion.php";
-$letra="";
+if(isset($_GET["letra"])){
+    $letra=$_GET["letra"];
+}
+else{
+    $letra="A";
+}
+if(isset($_GET["orden"])){
+    $orden=$_GET["orden"];
+}
+else{
+    $orden = "l.nombre";
+}
 ?>
 <!doctype html>
 <html lang="es">
@@ -58,35 +69,42 @@ $letra="";
     <main class="container">
         <div>
             <div>
-                <table>
-                    <thead>
-                        <tr>
-                            <th><a href="index.php?o=L">Localidad</a></th>
-                            <th><a href="index.php?o=P">Provincia</a></th>
-                            <th><a href="index.php?o=PO">Población</a></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <?php
-                            try {
-                                $con = getConexion();
-                                $sql = "SELECT l.nombre ,p.nombre, l.poblacion From localidades l
-                                        join provincias p on l.id_localidad = p.id_capital
-                                        where (l.nombre like 'A%') order by l.nombre;";
-                                $st = $con->prepare($sql);
-                                $st->bind_param("s", $letra);
-                                $st->execute();
-                                $st->close();
-                                $con->close();
-                            }
-                            catch (mysqli_sql_exception $e){
+                <?php
+                try {
+                    $con = getConexion();
+                    $sql = "SELECT l.nombre ,p.nombre, l.poblacion From localidades l
+                                    join provincias p on l.id_localidad = p.id_capital
+                                    where INSTR(l.nombre,?)=1 order by $orden";
+                    $st = $con->prepare($sql);
+                    $st->bind_param("s", $letra);
+                    $st->execute();
+                    $st->bind_result($localidad,$provincia,$poblacion);
+                    while ($st->fetch()){
+                        echo "<table>";
+                            echo "<thead>";
+                                echo "<tr>";
+                                    echo "<th><a href="."index.php?orden=l.nombre".">Localidad</a></th>";
+                                    echo "<th><a href="."index.php?orden=p.nombre,l.nombre".">Provincia</a></th>";
+                                    echo "<th><a href="."index.php?orden=poblacion||desc".">Población</a></th>" ;
+                                echo "</tr>";
+                            echo "</thead>";
+                            echo "<tbody>";
+                                echo "<tr>";
+                                    echo "<td>$localidad</td>";
+                                    echo "<td>$provincia</td>";
+                                    echo "<td>$poblacion</td>";
+                                echo "</tr>";
+                            echo "</tbody>";
+                        echo "</table>";
+                    }
+                    $st->close();
+                    $con->close();
+                }
+                catch (mysqli_sql_exception $e){
 
-                            }
-                            ?>
-                        </tr>
-                    </tbody>
-                </table>
+                }
+                ?>
+
             </div>
         </div>
     </main>
