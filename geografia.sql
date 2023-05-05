@@ -22828,7 +22828,9 @@ INSERT INTO localidades ( id_localidad, nombre, poblacion,n_provincia ) VALUES
 
 commit;
 
-SELECT l.nombre, l.poblacion From localidades l
-    where (l.nombre like 'A%');
+CREATE USER geografia@localhost
+    IDENTIFIED BY 'geografia';
+GRANT SELECT ON geografia.*
+    TO geografia@localhost;
 
 set foreign_key_checks=1;
